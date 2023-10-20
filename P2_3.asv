@@ -14,7 +14,7 @@ T=1;
 
 % plotFigures(@GFEM_solver, g, T, [1/8, 1/16], {@smoothIC, @discontinousIC});
 % plotFigures(@SUPG_solver, g, T, [1/8, 1/16], {@smoothIC, @discontinousIC});
-plotFigures(@RV_solver, g, T, [1/16], {@discontinousIC});
+plotFigures(@RV_solver, g, T, [1/8, 1/16], {@smoothIC, @discontinousIC});
 
 function out = plotFigures(fn, shape, T, h, ICs)
     for i = 1:size(ICs,2)

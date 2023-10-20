@@ -4,14 +4,14 @@ T = 1;
 h = [1/3];
 ICs = {@discontinousIC};
 field = @convectionfield;
-%  plotRefinedFigures(@RV_CN_DUALPRIMAL_solver, @circleg , T, h, ICs, field, 1e-2, @target1)
+plotRefinedFigures(@RV_CN_DUALPRIMAL_solver, @circleg , T, h, ICs, field, 1e-2, @target1)
 fns = {@SUPG_PIC_solver, @SUPG_RK4_solver,@RV_PIC_solver, @RV_RK4_solver, @GFEM_PIC_solver, @GFEM_RK4_solver};
 loads = {@target1,@target2, @target3,@target4,@target5};
 
-parfor i = 5:5
-%     plotFigures(fns{i}, Rectg(-2, -2.5, 2, 1.5), T,h, ICs, field,1e-2);
-    plotRefinedFigures(@RV_CN_DUALPRIMAL_solver, @circleg, T, h, ICs,field,1e-2, loads{i});
-end
+% parfor i = 5:5
+% %     plotFigures(fns{i}, Rectg(-2, -2.5, 2, 1.5), T,h, ICs, field,1e-2);
+%     plotRefinedFigures(@RV_CN_DUALPRIMAL_solver, @circleg, T, h, ICs,field,1e-2, loads{i});
+% end
 
 
 
