@@ -2,12 +2,12 @@ clear;
 close all;
 
 g = @circleg;
-h_max = 1/16;
+h_max = 1/8;
 T=1;
 [p,e,t] = initmesh(g,'hmax',h_max);
 [A,C,M,u_init,beta] = assemble(p,e,t);
 CFL = 0.5;
-k_n = CFL*h_max/beta;
+k_n = 1e-3;%CFL*h_max/beta;
 k_n = T/ceil(T/k_n);
 
 u0 = u_init;
@@ -128,14 +128,14 @@ function out = f(x,y)
     r0 = 0.25;
     x0 = 0.3;
     y0 = 0;
-    out = 0.5*(1-tanh((((x-x0).^2+(y-y0).^2))./r0^2-1));
-%     for i = 1:size(x,2)
-%         if (((x(i)-x0)^2+(y(i)-y0)^2) <= r0^2)
-%            out(i) = 1;%ones(size(x,2));
-%         else
-%             out(i) = 0;%zeros(size(x,2));
-%         end
-%     end
+%     out = 0.5*(1-tanh((((x-x0).^2+(y-y0).^2))./r0^2-1));
+    for i = 1:size(x,2)
+        if (((x(i)-x0)^2+(y(i)-y0)^2) <= r0^2)
+           out(i) = 1;%ones(size(x,2));
+        else
+            out(i) = 0;%zeros(size(x,2));
+        end
+    end
     
     
 end
