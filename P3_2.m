@@ -6,9 +6,9 @@ ICs = {@discontinousIC};
 field = @convectionfield;
 %  plotRefinedFigures(@RV_CN_DUALPRIMAL_solver, @circleg , T, h, ICs, field, 1e-2, @target1)
 fns = {@SUPG_PIC_solver, @SUPG_RK4_solver,@RV_PIC_solver, @RV_RK4_solver, @GFEM_PIC_solver, @GFEM_RK4_solver};
-loads = {@target1,@target2, @target3,@target4,@target5};
+loads = {@target1,@target2, @target3, @target4, @target5};
 
-parfor i = 5:5
+parfor i = 1:5
 %     plotFigures(fns{i}, Rectg(-2, -2.5, 2, 1.5), T,h, ICs, field,1e-2);
     plotRefinedFigures(@RV_CN_DUALPRIMAL_solver, @circleg, T, h, ICs,field,1e-2, loads{i});
 end
@@ -58,7 +58,7 @@ function out = plotRefinedFigures(fn, shape, T, h, ICs,field,k_n, force)
         for s =1:size(h,2)
             [p0,e0,t0] = initmesh(shape,'hmax',h(s));
             filename = "";
-            [xi, u_init, L2E, error_ind, p, e,t,phi, N_points, Err_vec] = refined_mesh_solver(shape, fn, T, h(s), ICs{i}, field, k_n, force);
+            [xi, u_init, L2E, error_ind, p, e,t,phi, N_points, Err_vec, k_n] = refined_mesh_solver(shape, fn, T, h(s), ICs{i}, field, k_n, force);
             filename = strrep(func2str(fn), "_solver", "") + num2str(h(s)^(-1));
             if func2str(ICs{i}) == "smoothIC"
                 filename = filename + "sm";
@@ -107,7 +107,16 @@ function out = plotRefinedFigures(fn, shape, T, h, ICs,field,k_n, force)
      
             colorbar off;
         
+            
             saveas(gcf,"P3/2/" + filename + "m.png");
+            figure;
+            ref_err = trapz(k_n,error_ind,2);
+            interp = pdeprtni(p,t, ref_err');
+            figure;
+            pdeplot(p,e,t, 'XYData',interp);
+            hold;
+            pdeplot(p,e,t);
+            saveas(gcf,"P3/2/" + filename + "h.png");
             
             fileID = fopen("P3/2/" + filename + "z.txt",'w');
             fprintf(fileID,'%1s %1s\n','N','e');
@@ -360,19 +369,22 @@ function [xi, u_init, L2E] = RV_RK4_solver(p,e,t, T, h_max, IC, field,k_n)
 
 end
 
-function [xi, u_init, L2E, error_ind, p, e,t,phi, N_points, Err_vec] = refined_mesh_solver(shape, solver, T, h_max, IC, field, k_n, force)
+function [xi, u_init, L2E, error_ind, p, e,t,phi, N_points, Err_vec,k_n] = refined_mesh_solver(shape, solver, T, h_max, IC, field, k_n, force)
     [p,e,t] = initmesh(shape,'hmax',h_max);
     N_points = [];
     Err_vec = [];
     err = 1;
-    TOL = 3e-3;
+    TOL = 1e-3;
     count = 0;
 %     [xi, u_init, ~, error_ind] = solver(p,e,t,T,h_max, IC ,field,k_n,force);
 %     err = trapz(k_n, sum(error_ind,1));
 %      disp(count + " " + err);
-    while err > TOL
+    while ((err > TOL))
         
         [xi, u_init, ~, error_ind, k_n, phi] = solver(p,e,t,T,h_max, IC ,field,k_n,force);
+        if(count > 75)
+            break;
+        end
 %         figure;
 %         pdeplot(p,e,t, 'XYData',xi, "ZData", xi);
 %         colormap white;
